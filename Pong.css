@@ -1,0 +1,19 @@
+/* Återställ margin och padding för body och html element */
+body,
+html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Ställ in behållarelementet att använda flexbox-layout, centrera dess innehåll vertikalt och horisontellt */
+#container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Sätter container i mitten på sidan */
+}
+
+#gameCanvas {
+  border: 1px solid #000000; /* sätter en 1px svart border */
+}
