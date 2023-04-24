@@ -132,3 +132,8 @@ function gameLoop() {
 // Kallar på gameLoop funktion varje 10 millisekunder med hjälp av setInterval
 setInterval(gameLoop, 10);
 
+
+
+
+
+// https://stackoverflow.com/questions/43814422/how-to-pause-simple-canvas-game-made-with-js-and-html5
