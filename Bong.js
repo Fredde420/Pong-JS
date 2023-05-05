@@ -3,6 +3,7 @@
 var canvas = document.getElementById("gameCanvas");
 // Skapa en 2D-kontext för canvasen
 var ctx = canvas.getContext("2d");
+var paused = false;
 
 // Sätt bredden och höjden på canvasen
 canvas.width = 1270;
@@ -114,6 +115,9 @@ function draw() {
   ctx.font = "24px Arial";
   ctx.fillText(leftScore, 100, 50);
   ctx.fillText(rightScore, canvas.width - 100, 50);
+  if (!paused) {
+    requestAnimationFrame(draw);
+  }
 }
 
 function resetBall() {
@@ -137,3 +141,20 @@ setInterval(gameLoop, 10);
 
 
 // https://stackoverflow.com/questions/43814422/how-to-pause-simple-canvas-game-made-with-js-and-html5
+
+window.addEventListener('keydown', pauseGameKeyHandler, false);
+
+            function pauseGameKeyHandler(e) {
+                var keyCode = e.keyCode;
+                switch(keyCode){
+                    case 80: //p
+                    togglePause();
+                    break;
+                }
+
+            }
+
+            function togglePause() {
+                paused = !paused;
+                draw();
+            }
