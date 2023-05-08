@@ -1,0 +1,226 @@
+<html>
+  <title>Level Selector</title>
+  <canvas id="myCanvas" width="750" height="400"></canvas>
+
+  <style type="text/css">
+    canvas {
+      background: #eee;
+    }
+  </style>
+
+  <script>
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
+    var x = canvas.width / 2;
+    var y = canvas.height - 30;
+    var dx = 2; //Ball is moving in x direction at a constant rate
+    var dy = -2; //Ball is moving in y direction at a constant rate
+    var ballRadius = 10; //To see if ball is colliding with brick/canvas
+    var paddleHeight = 10;
+    var paddleWidth = 75;
+    var paddleX = (canvas.width - paddleWidth) / 2;
+    var rightPressed = false; //This variable is false because the 'right arrow' key is not pressed.
+    var leftPressed = false; //This variable is false because the 'left arrow' key is not pressed.
+    var brickRowCount = 5;
+    var brickColumnCount = 8;
+    var brickWidth = 75;
+    var brickHeight = 20;
+    var brickPadding = 10;
+    var brickOffsetTop = 30;
+    var brickOffsetLeft = 30;
+    var score = 0;
+    var lives = 3;
+    var paused = false;
+
+    var bricks = []; //this is an array holding all the bricks
+    for (var c = 0; c < brickColumnCount; c++) {
+      bricks[c] = [];
+      for (var r = 0; r < brickRowCount; r++) {
+        bricks[c][r] = { x: 0, y: 0, status: 1 }; //If status is '1' then draw it. However, is status is '0', fill in with background
+      }
+    }
+
+    document.addEventListener("keydown", keyDownHandler, false); //Functions only when key is pressed
+    document.addEventListener("keyup", keyUpHandler, false); //Functions only when key is not pressed
+    document.addEventListener("mousemove", mouseMoveHandler, false); //Functions only when mouse curcor moves
+
+    //keyCode(39) is the code for the 'right arrow' key and keyCode(37) is the code for the 'left arrow' key
+    function keyDownHandler(e) {
+      if (e.keyCode == 39) {
+        rightPressed = true;
+      } else if (e.keyCode == 37) {
+        leftPressed = true;
+      }
+    }
+
+    function keyUpHandler(e) {
+      if (e.keyCode == 39) {
+        rightPressed = false;
+      } else if (e.keyCode == 37) {
+        leftPressed = false;
+      }
+    }
+
+    function mouseMoveHandler(e) {
+      var relativeX = e.clientX - canvas.offsetLeft; //This represents the hoizontal mouse movement.
+      if (relativeX > 0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth / 2;
+      }
+    }
+
+    window.addEventListener("keydown", pauseGameKeyHandler, false);
+
+    function pauseGameKeyHandler(e) {
+      var keyCode = e.keyCode;
+      switch (keyCode) {
+        case 80: //p
+          togglePause();
+          break;
+      }
+    }
+
+    function togglePause() {
+      paused = !paused;
+      draw();
+    }
+
+    //Collisions only true when:
+    //  -The x position of the ball is greater than the x position of the brick.
+    //  -The x position of the ball is less than the x position of the brick plus its width.
+    //  -The y position of the ball is greater than the y position of the brick.
+    //  -The y position of the ball is less than the y position of the brick plus its height.
+    function collisionDetection() {
+      for (var c = 0; c < brickColumnCount; c++) {
+        for (var r = 0; r < brickRowCount; r++) {
+          var b = bricks[c][r];
+          if (b.status == 1) {
+            if (
+              x > b.x &&
+              x < b.x + brickWidth &&
+              y > b.y &&
+              y < b.y + brickHeight
+            ) {
+              dy = -dy;
+              b.status = 0;
+              score++;
+              if (score == brickRowCount * brickColumnCount) {
+                alert("YOU WIN, CONGRATULATIONS!");
+                document.location.reload();
+              }
+            }
+          }
+        }
+      }
+    }
+
+    //this is the score variable of the game
+    function drawScore() {
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "#0095DD";
+      ctx.fillText("Score: " + score, 8, 20);
+    }
+
+    //this is the lives variable of the game
+    function drawLives() {
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "#0095DD";
+      ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
+    }
+
+    //this creates the ball
+    function drawBall() {
+      ctx.beginPath();
+      ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+      ctx.fillStyle = "#0095DD";
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    //this creates the paddle
+    function drawPaddle() {
+      ctx.beginPath();
+      ctx.rect(
+        paddleX,
+        canvas.height - paddleHeight,
+        paddleWidth,
+        paddleHeight
+      );
+      ctx.fillStyle = "#0095DD";
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    //this creates the bricks
+    function drawBricks() {
+      for (var c = 0; c < brickColumnCount; c++) {
+        for (var r = 0; r < brickRowCount; r++) {
+          if (bricks[c][r].status == 1) {
+            var brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+            var brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
+            bricks[c][r].x = brickX;
+            bricks[c][r].y = brickY;
+            ctx.beginPath();
+            ctx.rect(brickX, brickY, brickWidth, brickHeight);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+          }
+        }
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); //clears canvas content from previous frame
+      drawBall(); //this code draws the ball onto the canvas
+      drawPaddle(); //this code draws the paddle onto the canvas
+      collisionDetection(); //this codes enables the collision detection for the ball and bricks
+      drawBricks(); //this code draws the bricks onto the canvas
+      drawScore(); //this code draws the score variable onto the canvas
+      drawLives(); //this code draws the lives variable onto the canvas
+
+      //Reverse Ball movement when the ball collides with wall in 'x' direction (Left/Right wall)
+      if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+        dx = -dx;
+      }
+
+      //Reverse Ball movement when the ball collides with wall in 'y' direction (Top/Bottom wall)
+      if (y + dy < ballRadius) {
+        dy = -dy;
+      } else if (y + dy > canvas.height - ballRadius) {
+        if (x > paddleX && x < paddleX + paddleWidth) {
+          dy = -dy; //If the ball collides with the paddle,  the ball is rebounded in the opposite direction.
+        } else {
+          lives--;
+          if (!lives) {
+            alert("GAME OVER");
+            document.location.reload();
+          } else {
+            x = canvas.width / 2;
+            y = canvas.height - 30;
+            dx = 2;
+            dy = -2;
+            paddleX = (canvas.width - paddleWidth) / 2;
+          }
+        }
+      }
+
+      if (rightPressed && paddleX < canvas.width - paddleWidth) {
+        //limits paddle movement in between the canvas width
+        paddleX += 7; //Paddle shifts 7 pixels in the positive x direction
+      } else if (leftPressed && paddleX > 0) {
+        //limits paddle movement in between the canvas width
+        paddleX -= 7; //Paddle shifts 7 pixels in the negative x direction
+      }
+
+      x += dx; //Ball is updated by painting it over each position it moves in
+      y += dy; //Ball is updated by painting it over each position it moves in
+      if (!paused) {
+        requestAnimationFrame(draw);
+      }
+    }
+
+    draw();
+  </script>
+
+  <body></body>
+</html>

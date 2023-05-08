@@ -90,10 +90,27 @@ function update() {
     rightScore++;
     resetBall();
   }
+
   if (ball.x > canvas.width) {
     leftScore++;
     resetBall();
   }
+
+  if (leftScore == 10){
+    alert("Spelare 1 Vinner")
+    resetScore()
+    resetBall()
+    resetPaddle()
+  }
+
+  if (rightScore == 10){
+    alert("Spelare 2 Vinner")
+    resetScore()
+    resetBall()
+    resetPaddle()
+  }
+
+  
 }
 
 function draw() {
@@ -113,11 +130,16 @@ function draw() {
 
   // Rita poängen
   ctx.font = "24px Arial";
-  ctx.fillText(leftScore, 100, 50);
-  ctx.fillText(rightScore, canvas.width - 100, 50);
-  if (!paused) {
-    requestAnimationFrame(draw);
-  }
+  ctx.fillText(leftScore, 150, 50);
+  ctx.fillText(rightScore, canvas.width - 45, 50);
+  ctx.fillText("Spelare 1:", 25, 50);
+  ctx.fillText("Spelare 2:", canvas.width - 170, 50);
+  ctx.fillText("Tryck på P för att pausa", 490, 50);
+}
+
+function resetScore() {
+  leftScore = 0
+  rightScore = 0
 }
 
 function resetBall() {
@@ -127,34 +149,39 @@ function resetBall() {
   ball.dx = -ball.dx;
 }
 
+function resetPaddle(){
+  leftPaddle.x = 0;
+  leftPaddle.y = (canvas.height - paddleHeight) / 2;
+  rightPaddle.x = canvas.width - paddleWidth;
+  rightPaddle.y = (canvas.height - paddleHeight) / 2;
+}
+
+
 function gameLoop() {
   // Uppdatera och ritar elementen i en loop
   update();
   draw();
 }
 
-// Kallar på gameLoop funktion varje 10 millisekunder med hjälp av setInterval
-setInterval(gameLoop, 10);
+// Kallar på gameLoop funktion varje  10 millisekunder med hjälp av setInterval
 
+if (!paused){
+  id = setInterval(gameLoop, 10);
+}
 
+window.addEventListener("keydown", (e) => {
+  console.log(e.key)
+  if (e.key == "p"){
+    if (!paused){
+      console.log("pausar")
+      paused = true;
+      clearInterval(id);
+    }
+    else {
+      console.log("startar")
+      paused = false;
+      id = setInterval(gameLoop, 10);
+    }
+  }
 
-
-
-// https://stackoverflow.com/questions/43814422/how-to-pause-simple-canvas-game-made-with-js-and-html5
-
-window.addEventListener('keydown', pauseGameKeyHandler, false);
-
-            function pauseGameKeyHandler(e) {
-                var keyCode = e.keyCode;
-                switch(keyCode){
-                    case 80: //p
-                    togglePause();
-                    break;
-                }
-
-            }
-
-            function togglePause() {
-                paused = !paused;
-                draw();
-            }
+})
