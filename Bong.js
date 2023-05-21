@@ -96,6 +96,7 @@ function update() {
     resetBall();
   }
 
+  // Kontrolerar om någon av spelarna får 10 poäng, om någon av spelarna på 10 poäng vinner den spelaren.
   if (leftScore == 10){
     alert("Spelare 1 Vinner")
     resetScore()

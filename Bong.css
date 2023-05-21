@@ -15,5 +15,5 @@ html {
 }
 
 #gameCanvas {
-  border: 1px solid #000000; /* sätter en 1px svart border */
+  border: 10px solid #000000; /* sätter en 10px svart border */
 }
